@@ -30,6 +30,7 @@ local success, err = pcall(function()
 	ion2d.input.bind("special", keys.leftShift)
 	ion2d.input.bind("restart", keys.r)
 	ion2d.input.bind("quit", keys.q)
+	ion2d.input.bind("start", keys.enter)
 
 	local player, camera, powerups, enemies
 	local wave = 1
@@ -126,8 +127,7 @@ local success, err = pcall(function()
 
 	enemies = {
 		behaviors = {},
-		_frameCount = 0, 
-
+		_frameCount = 0,
 	}
 
 	function enemies.behaviors.chase(enemy, dt)
@@ -197,7 +197,6 @@ local success, err = pcall(function()
 	end
 
 	function enemies.updateAll(dt)
-
 		local allEnemies = ion2d.world.getEntitiesOfType("enemy")
 		local enemyCount = #allEnemies
 
@@ -446,18 +445,56 @@ local success, err = pcall(function()
 		end
 	end
 
-	local thrustFrameCount = 0 
+	local thrustFrameCount = 0
 
 	ion2d.stateMachine = ion2d.StateMachine:new({
-		playing = {
+		menu = {
 			enter = function()
-				initGame()
-				thrustFrameCount = 0 
-
+				for _, entity in ipairs(ion2d.world.getAllEntities()) do
+					entity:destroy(0)
+				end
 			end,
 
 			update = function(dt)
+				camera:update(dt, screenW, screenH)
 
+				term.clear()
+
+				term.setCursorPos(1, 3)
+				term.write("SPACE DEFENDER CC")
+
+				term.setCursorPos(1, 5)
+				term.write("CONTROLS:")
+				term.setCursorPos(1, 6)
+				term.write("A/D - Turn")
+				term.setCursorPos(1, 7)
+				term.write("W - Thrust")
+				term.setCursorPos(1, 8)
+				term.write("S - Brake")
+				term.setCursorPos(1, 9)
+				term.write("Space - Fire")
+				term.setCursorPos(1, 10)
+				term.write("Left Shift - Special Attack")
+				term.setCursorPos(1, 11)
+				term.write("R - Restart (when dead)")
+				term.setCursorPos(1, 12)
+				term.write("Q - Quit")
+
+				term.setCursorPos(1, 14)
+				term.write("Press ENTER to start")
+
+				if ion2d.input.down("start") then
+					ion2d.setState("playing")
+				end
+			end,
+		},
+		playing = {
+			enter = function()
+				initGame()
+				thrustFrameCount = 0
+			end,
+
+			update = function(dt)
 				local time = os_epoch("utc") / 1000
 				local hasPlayer = player and not player:isDestroyed()
 
@@ -647,7 +684,6 @@ local success, err = pcall(function()
 
 		gameover = {
 			enter = function()
-
 				local bullets = ion2d.world.getEntitiesOfType("bullet")
 				local bulletCount = #bullets
 				for i = 1, bulletCount do
@@ -657,7 +693,6 @@ local success, err = pcall(function()
 			end,
 
 			update = function(dt)
-
 				camera:update(dt, screenW, screenH)
 
 				term.clear()
@@ -688,7 +723,7 @@ local success, err = pcall(function()
 		},
 	})
 
-	ion2d.setState("playing")
+	ion2d.setState("menu")
 
 	ion2d.setTilemap(background)
 
@@ -726,4 +761,3 @@ if not success then
 	print("ERROR:")
 	print(tostring(err))
 end
-
