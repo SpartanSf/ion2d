@@ -14,9 +14,6 @@ local HEADERS = {
 local function http_get(url)
 	local res, err = http.get(url, HEADERS)
 	if not res then
-		local tmp = fs.open("tmp.txt", "w")
-		tmp.write(url)
-		tmp.close()
 		error("HTTP request failed: " .. err)
 	end
 	local data = res.readAll()
