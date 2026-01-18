@@ -4,7 +4,7 @@ ion2d is a 2D game engine for CraftOS-PC with sprite rendering, entity managemen
 
 ## Table of Contents
 
-1. [Getting Started](##getting-started)
+1. [Getting Started](#getting-started)
 2. [Initialization](#initialization)
 3. [Sprites and Spritesheets](#sprites-and-spritesheets)
 4. [Entities](#entities)
